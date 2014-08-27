@@ -48,6 +48,36 @@ function add(value, result){
 	return result + value;
 }
 
+function sub(value, result) {
+	return result - value;
+}
+
+function times(value, result) {
+	return result * value;
+}
+
+function divide(value, result) {
+	if (value === 0) {
+		throw new Error('Value = 0 Error');
+	}
+	return result / value;
+}
+
+function change(value, operaton, result){
+	switch(operaton){
+	case '+':
+		return add(value, result);
+	case '-':
+		return sub(value, result);
+	case '*':
+		return times(value, result);
+	case '/':
+		return divide(value, result);
+	default:
+		break;
+	}
+}
+
 /**
  * Main proccess functions
  * 
