@@ -13,6 +13,7 @@ function Calculator() {
 	this.result = 0;
 	this.operator = '';
 	this.value = 0;
+	this.phase = 0;
 }
 
 Calculator.prototype.requestToInputValues = function(){
@@ -86,16 +87,29 @@ function change(value, operaton, result){
 function calculatorHundler() {
 	// init readline interface.
 	var i = rl.createInterface(process.stdin,process.stdout, null);
-	// setting Pronpt.
+	// setting default pronpt.
 	i.setPrompt('? ');
+	
 	// Event
 	i.on('line',function(line){
-		value = line;
-		console.log('value is ' + value);
-		i.prompt();
-	});
+		if (inputFilter(line)) {
+			console.log('value is ' + value);
+			i.prompt();
+		}else{
+			console.log('please input number.');
+		}
+	});	
+	i.prompt();
 }
 
+function inputFilter(input) {
+	this.input = Number(input);
+	if (typeof this.input === 'number') {
+		return value = this.input;
+	}else{
+		return false;
+	}
+}
 
 // #####################################################################################################################
 // ################################################### M A I N #########################################################
@@ -105,10 +119,10 @@ console.log('Starting Javascript Calculator...');
 
 // init Calculator
 var calculator = new Calculator();
-var result,operator,value;
+var result,operator,value,phase;
 console.log(calculator);
 
-// input test
+// hundler test
 calculatorHundler();
 
 // END
