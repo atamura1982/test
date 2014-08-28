@@ -83,14 +83,19 @@ function change(value, operaton, result){
  * 
  */
 
-function inputValue(cb) {
+function calculatorHundler() {
+	// init readline interface.
 	var i = rl.createInterface(process.stdin,process.stdout, null);
-	i.question('? \n', function(answer){
-		i.close();
-		process.stdin.destroy();
-		return cb(null,answer);
+	// setting Pronpt.
+	i.setPrompt('? ');
+	// Event
+	i.on('line',function(line){
+		value = line;
+		console.log('value is ' + value);
+		i.prompt();
 	});
 }
+
 
 // #####################################################################################################################
 // ################################################### M A I N #########################################################
@@ -104,8 +109,6 @@ var result,operator,value;
 console.log(calculator);
 
 // input test
-inputValue(function(err,answer){
-	console.log('value is ' + answer);
-});
+calculatorHundler();
 
 // END
