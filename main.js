@@ -10,35 +10,72 @@ var rl = require('readline');
 
 function Calculator() {
 	// constructor //
-	this.result = 0;
 	this.operator = '';
+	this.phase = 0;
 	this.value = 0;
+	this.result = 0;
 }
 
-Calculator.prototype.requestToInputValues = function(){
-	console.log('<< Please input some numbers... >>');
-	console.log(this.result + ' ' + this.operator + ' ?');
-	console.log('');	
+Calculator.prototype.runOperation = function(){
+	switch(this.operator){
+		case '+':
+			this.result = add(this.value, this.result);
+			break;
+		case '-':
+			this.result = sub(this.value, this.result);
+			break;
+		case '*':
+			this.result = times(this.value, this.result);
+			break;
+		case '/':
+			this.result = divide(this.value, this.result);
+			break;
+		default:
+			return false;
+	}
 };
 
-Calculator.prototype.requestToInputFirstValues = function(){
-	console.log('<< Please input some numbers... >>');
-	console.log('?');
-	console.log('');
+Calculator.prototype.handler = function(){
+	var self = this;
+	// init readline interface.
+	var i = rl.createInterface(process.stdin,process.stdout, null);
+	// setting default pronpt.
+	i.setPrompt('? ');
+	
+	// Event listener
+	i.on('line',function(line){
+		switch (self.phase) {
+			case 0:
+				if ((self.value = inputValueFilter(line)) ||
+				    self.value === 0) {
+					self.result = self.value;
+					self.phase = 1;
+					i.setPrompt(self.result + ' ? ');
+				}
+				break;
+			case 1:
+				if (inputOperatorFilter(line)) {
+					self.operator = operator;
+					self.phase = 2;
+					i.setPrompt(self.result + ' ' + self.operator + ' ? ');
+				}
+				break;
+			case 2:
+				if ((self.value = inputValueFilter(line)) ||
+				    self.value === 0) {
+					calculator.runOperation();
+					self.phase = 1;
+					i.setPrompt('= ' + self.result + ' ? ');
+				}
+				break;
+			default:
+				break;
+		}
+		i.prompt();
+	});
+	i.prompt();
 };
 
-Calculator.prototype.requestToSelectOperators = function(){
-	console.log('<< Please select operators... >>');
-	console.log('+  or  -  or  /  or  *');
-	console.log('');
-	console.log(this.result + ' ?');
-	console.log('');
-};
-
-Calculator.prototype.outputResult = function(){
-	console.log('= ' + this.result);
-	console.log('');
-};
 
 // #####################################################################################################################
 // ############################################## F U N C T I O N S ####################################################
@@ -63,33 +100,31 @@ function divide(value, result) {
 	return result / value;
 }
 
-function change(value, operaton, result){
-	switch(operaton){
-	case '+':
-		return add(value, result);
-	case '-':
-		return sub(value, result);
-	case '*':
-		return times(value, result);
-	case '/':
-		return divide(value, result);
-	default:
-		break;
-	}
-}
-
 /**
  * Main proccess functions
  * 
  */
 
-function inputValue(cb) {
-	var i = rl.createInterface(process.stdin,process.stdout, null);
-	i.question('? \n', function(answer){
-		i.close();
-		process.stdin.destroy();
-		return cb(null,answer);
-	});
+function inputValueFilter(input) {
+	var Input = Number(input);
+	if (isNaN(Input)) {
+		console.log('!error!'); 
+		return false;
+	}else{
+		return Input;
+	}
+}
+
+function inputOperatorFilter(input) {
+	if (input === '+' ||
+	    input === '-' ||
+	    input === '*' ||
+	    input === '/') {
+		return operator = input;
+	}else{
+		console.log('!error!');
+		return false;
+	}
 }
 
 // #####################################################################################################################
@@ -100,12 +135,8 @@ console.log('Starting Javascript Calculator...');
 
 // init Calculator
 var calculator = new Calculator();
-var result,operator,value;
-console.log(calculator);
 
-// input test
-inputValue(function(err,answer){
-	console.log('value is ' + answer);
-});
+// handler start
+calculator.handler();
 
 // END
