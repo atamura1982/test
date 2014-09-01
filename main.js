@@ -41,9 +41,12 @@ Calculator.prototype.handler = function(){
 	var i = rl.createInterface(process.stdin,process.stdout, null);
 	// setting default pronpt.
 	i.setPrompt('? ');
-	
+
 	// Event listener
 	i.on('line',function(line){
+		if(line == "exit"){
+			self.phase = 9;
+		}
 		switch (self.phase) {
 			case 0:
 				if ((self.value = inputValueFilter(line)) ||
@@ -68,10 +71,17 @@ Calculator.prototype.handler = function(){
 					i.setPrompt('= ' + self.result + ' ? ');
 				}
 				break;
+			case 9:
+				console.log('bye');
+				i.close();
+				process.stdin.destroy();
+				break;
 			default:
 				break;
 		}
-		i.prompt();
+		if(self.phase != 9){
+			i.prompt();
+		}
 	});
 	i.prompt();
 };
@@ -102,13 +112,13 @@ function divide(value, result) {
 
 /**
  * Main proccess functions
- * 
+ *
  */
 
 function inputValueFilter(input) {
 	var Input = Number(input);
 	if (isNaN(Input)) {
-		console.log('!error!'); 
+		console.log('!error!');
 		return false;
 	}else{
 		return Input;
